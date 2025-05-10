@@ -12,6 +12,7 @@ from nltk.stem import WordNetLemmatizer
 from textblob import TextBlob
 from numba import jit
 from collections import defaultdict
+import nltk_setup
 import os
 import json
 import time
@@ -1321,7 +1322,7 @@ def load_css():
 @st.cache_resource
 def load_recommendation_system():
     try:
-        # Try to load data files (adjust paths as needed)
+        # Try to load data files
         meta_df = pd.read_json("out_Meta.json", lines=True)
         reviews_df = pd.read_json("out_Appliances5.json", lines=True)
         
@@ -1329,8 +1330,13 @@ def load_recommendation_system():
         rec_system = RecommendationSystem(meta_df, reviews_df)
         rec_system.initialize()
         return rec_system
+    except FileNotFoundError as e:
+        st.error(f"Data file not found: {e}")
+        st.info("Please make sure the required data files are in the repository.")
+        st.stop()
     except Exception as e:
         st.error(f"Error loading recommendation system: {e}")
+        st.info("Please check the logs for more details.")
         st.stop()
 
 # Function to create a product card
